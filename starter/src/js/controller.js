@@ -1,13 +1,21 @@
 import * as model from './model.js';
 import recipeView from './views/recipeView.js';
+import searchView from './views/searchView.js';
+import searchResultView from './views/searchResultView.js';
 
 //two packages imported for polyfilling (used to support our app in old browsers)
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
+import { async } from 'regenerator-runtime';
 
 // https://forkify-api.herokuapp.com/v2
 
 ///////////////////////////////////////
+
+//this block is related to parcel where on each save it prevent the browser state to be refreshed/reload
+// if (module.hot) {
+//   module.hot.accept();
+// }
 
 const controlRecipes = async function () {
   try {
@@ -36,7 +44,23 @@ const controlRecipes = async function () {
   }
 };
 
-// controlRecipes();
+const controlSearchResults = async function () {
+  try {
+    searchResultView.renderSpinner();
+    // console.log(searchResultView);
+
+    const query = searchView.getQuery();
+    if (!query) return;
+
+    //this will set the response from http call in model state ie. model.state.recipe.results
+    await model.loadSearchResults(query);
+
+    //after fetching the recipes dislpay them as a list using pagination (page size by default is 10)
+    searchResultView.render(model.getRecipePerPage());
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 //creating init method which will initiliaze all the methods on controller module which can be invoked from view module on some event
 //this way of handling event is done using the publisher-subscriber design pattern
@@ -44,7 +68,8 @@ const controlRecipes = async function () {
 //and the view is the publisher (publishing the event by listening to the addEventListener and calling the callback function
 //for example controlRecipes passed below in the addHandlerEvent() function )
 const init = function () {
-  recipeView.addHandlerEvent(controlRecipes);
+  recipeView.addHandlerRender(controlRecipes);
+  searchView.addHandlerSearch(controlSearchResults);
 };
 
 //initializing  all the controller functions

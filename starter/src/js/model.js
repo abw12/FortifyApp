@@ -1,13 +1,20 @@
-import { API_URL } from './config.js';
+import { async } from 'regenerator-runtime';
+import { API_URL, RECIPE_PER_PAGE } from './config.js';
 import { getJSON } from './helper.js';
 
 const state = {
   recipe: {},
+  search: {
+    page: 1,
+    query: '',
+    results: [],
+    resultsPerPage: RECIPE_PER_PAGE,
+  },
 };
 
 const loadRecipe = async function (id) {
   try {
-    const body = await getJSON(`${API_URL}/${id}`);
+    const body = await getJSON(`${API_URL}${id}`);
 
     let { recipe } = body.data; //using destructuring the object
     // console.log(recipe); //this res object recipe have few fields which are with the _ underscore mark which we don't want  so re-mapping bloew
@@ -22,11 +29,39 @@ const loadRecipe = async function (id) {
       ingredients: recipe.ingredients,
       publisher: recipe.publisher,
     };
-    console.log(state.recipe);
   } catch (err) {
     console.error(err);
     throw err;
   }
 };
 
-export { loadRecipe, state };
+const loadSearchResults = async function (query) {
+  try {
+    state.search.query = query;
+    const res = await getJSON(`${API_URL}?search=${query}`);
+    // console.log(res);
+    state.search.results = res.data.recipes.map(recipe => {
+      return {
+        id: recipe.id,
+        title: recipe.title,
+        imageUrl: recipe.image_url,
+        publisher: recipe.publisher,
+      };
+    });
+    console.log(state.search.results);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+const getRecipePerPage = function (page = state.search.page) {
+  //calculating start and end dynamically ,if page=1 then start will be 1-1 * 10 = 0  and end will be 1*10=10
+  //since slice method exclude last index so it will be 0-9
+  const start = (page - 1) * state.search.resultsPerPage;
+  const end = page * state.search.resultsPerPage;
+
+  return state.search.results.slice(start, end);
+};
+
+export { loadRecipe, loadSearchResults, getRecipePerPage, state };
