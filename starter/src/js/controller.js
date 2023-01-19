@@ -2,6 +2,7 @@ import * as model from './model.js';
 import recipeView from './views/recipeView.js';
 import searchView from './views/searchView.js';
 import searchResultView from './views/searchResultView.js';
+import paginationView from './views/PaginationView.js';
 
 //two packages imported for polyfilling (used to support our app in old browsers)
 import 'core-js/stable';
@@ -48,18 +49,31 @@ const controlSearchResults = async function () {
   try {
     searchResultView.renderSpinner();
     // console.log(searchResultView);
-
+    // 1)get search query
     const query = searchView.getQuery();
     if (!query) return;
 
+    // 2) load the results
     //this will set the response from http call in model state ie. model.state.recipe.results
     await model.loadSearchResults(query);
 
-    //after fetching the recipes dislpay them as a list using pagination (page size by default is 10)
+    //3) render the results on UI
+    //after fetching the recipes dislpay them as a list using pagination (page size by default is 10,start from page no.1 by default)
     searchResultView.render(model.getRecipePerPage());
+
+    //4) Render initial pagination result
+    //passing entire search object from the state
+    paginationView.render(model.state.search);
   } catch (err) {
     console.log(err);
   }
+};
+
+const controlPagination = function (goToPage) {
+  //1) render the NEW results on UI
+  searchResultView.render(model.getRecipePerPage(goToPage));
+  //2) Render initial pagination result
+  paginationView.render(model.state.search);
 };
 
 //creating init method which will initiliaze all the methods on controller module which can be invoked from view module on some event
@@ -70,6 +84,7 @@ const controlSearchResults = async function () {
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
   searchView.addHandlerSearch(controlSearchResults);
+  paginationView.addHandlerClick(controlPagination);
 };
 
 //initializing  all the controller functions

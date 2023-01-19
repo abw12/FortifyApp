@@ -8,6 +8,13 @@ class RecipeView extends View {
   _errorMessage = `Recipe is not found with corresponding ID.Please try with some other ID.`;
   _message = '';
 
+  addHandlerRender(handler) {
+    // window.addEventListener('hashchange',  );
+    // window.addEventListener('load', controlRecipes);
+    //we can also write above two lines as below
+    ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handler));
+  }
+
   _generateMarkup() {
     return `
         <figure class="recipe__fig">

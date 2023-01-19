@@ -58,11 +58,4 @@ export default class View {
     this._clear();
     this._parentEl.insertAdjacentHTML('afterbegin', markUp);
   }
-
-  addHandlerRender(handler) {
-    // window.addEventListener('hashchange',  );
-    // window.addEventListener('load', controlRecipes);
-    //we can also write above two lines as below
-    ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handler));
-  }
 }

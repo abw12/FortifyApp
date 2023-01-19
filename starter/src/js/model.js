@@ -56,6 +56,8 @@ const loadSearchResults = async function (query) {
 };
 
 const getRecipePerPage = function (page = state.search.page) {
+  state.search.page = page;
+
   //calculating start and end dynamically ,if page=1 then start will be 1-1 * 10 = 0  and end will be 1*10=10
   //since slice method exclude last index so it will be 0-9
   const start = (page - 1) * state.search.resultsPerPage;
