@@ -66,4 +66,20 @@ const getRecipePerPage = function (page = state.search.page) {
   return state.search.results.slice(start, end);
 };
 
-export { loadRecipe, loadSearchResults, getRecipePerPage, state };
+const updateServings = function (newServing) {
+  state.recipe.ingredients.forEach(ing => {
+    return (ing.quantity = (ing.quantity * newServing) / state.recipe.servings);
+    // formula newQuantity = oldQuantity * newServing / oldServing;
+  });
+
+  //update the new servings in model
+  state.recipe.servings = newServing;
+};
+
+export {
+  loadRecipe,
+  loadSearchResults,
+  getRecipePerPage,
+  updateServings,
+  state,
+};

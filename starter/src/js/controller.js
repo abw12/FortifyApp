@@ -26,6 +26,9 @@ const controlRecipes = async function () {
 
     recipeView.renderSpinner();
 
+    //0) update searchresultview to mark the selected search result
+    searchResultView.update(model.getRecipePerPage());
+
     //1) fetching the recipe details
     //calling the model to load the data
     //since the loadRecipe function is a async function we have to await for it
@@ -48,6 +51,7 @@ const controlRecipes = async function () {
 const controlSearchResults = async function () {
   try {
     searchResultView.renderSpinner();
+
     // console.log(searchResultView);
     // 1)get search query
     const query = searchView.getQuery();
@@ -76,6 +80,14 @@ const controlPagination = function (goToPage) {
   paginationView.render(model.state.search);
 };
 
+const controlServings = function (newServings) {
+  //update the new serving and adjust the ingredients quantity
+  model.updateServings(newServings);
+
+  //update and render the recipe
+  recipeView.update(model.state.recipe);
+};
+
 //creating init method which will initiliaze all the methods on controller module which can be invoked from view module on some event
 //this way of handling event is done using the publisher-subscriber design pattern
 // where the controller is the subscriber (subscribing to the events happened in view)
@@ -83,6 +95,7 @@ const controlPagination = function (goToPage) {
 //for example controlRecipes passed below in the addHandlerEvent() function )
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
+  recipeView.addHandlerServings(controlServings);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
 };

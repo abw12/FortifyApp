@@ -12,7 +12,7 @@ class PaginationView extends View {
     this._parentEl.addEventListener('click', function (event) {
       const btn = event.target.closest('.btn--inline'); //getting the closest element to this given class,in upward direction hierarchy in html
       if (!btn) return;
-      const goToPage = +btn.dataset.goto; //adding '+' in-front of a string converts it to number
+      const goToPage = +btn.dataset.goto; //adding '+' in-front of a string converts it to number , goto should be the same name as mentioned below in html
       handler(goToPage);
     });
   }

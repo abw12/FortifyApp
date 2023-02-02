@@ -15,6 +15,19 @@ class RecipeView extends View {
     ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handler));
   }
 
+  addHandlerServings(handler) {
+    this._parentEl.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--update-servings'); //element deligation
+      if (!btn) return;
+      console.log(btn);
+      // const updateTo = +btn.dataset.updateTo; //if there are hyphen in the name given for data property
+      //in html button tag then after hyphen we convert the letter to camel casing
+      //above line can be done using the destructuring syntax as well
+      const { updateTo } = btn.dataset;
+      if (+updateTo > 0) handler(+updateTo);
+    });
+  }
+
   _generateMarkup() {
     return `
         <figure class="recipe__fig">
@@ -46,12 +59,16 @@ class RecipeView extends View {
             <span class="recipe__info-text">servings</span>
     
             <div class="recipe__info-buttons">
-              <button class="btn--tiny btn--increase-servings">
+              <button class="btn--tiny btn--update-servings" data-update-to="${
+                this._data.servings - 1
+              }">
                 <svg>
                   <use href="${icons}#icon-minus-circle"></use>
                 </svg>
               </button>
-              <button class="btn--tiny btn--increase-servings">
+              <button class="btn--tiny btn--update-servings" data-update-to="${
+                this._data.servings + 1
+              }">
                 <svg>
                   <use href="${icons}#icon-plus-circle"></use>
                 </svg>
