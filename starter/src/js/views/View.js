@@ -9,11 +9,14 @@ export default class View {
   //all these method are common in most of the view related classes/objects
   //hence we decalred them in parent class called View which can be inherited in child class
   //so via prototype chain all these method can be used by child classes
-  render(data) {
+  render(data, render = true) {
     if (!data || (Array.isArray(data) && data.length === 0))
       return this.renderError();
     this._data = data;
     const markup = this._generateMarkup();
+
+    if (!render) return markup;
+
     this._clear();
     this._parentEl.insertAdjacentHTML('afterbegin', markup);
   }
